@@ -78,6 +78,7 @@ const ProgramState ExecuteMenuChoice(Database& database, const int choice)
 int main()
 {
 	system("MODE CON COLS=150 LINES=22");
+	srand(time(NULL));
 
 	Database database;
 

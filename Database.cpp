@@ -20,9 +20,14 @@ bool Database::HasUser(const std::string& username) const
 bool Database::CheckPassword(const std::string& username, const std::string& password) const
 {
     const User* user = FindUser(username);
+    return CheckPassword(user, password);
+}
+
+bool Database::CheckPassword(const User* user, const std::string& password) const
+{
     if (user != nullptr)
     {
-        return user->GetPassword() == password;
+        return CompareStrings(user->GetPassword(), password);
     }
     return false;
 }
@@ -42,6 +47,23 @@ void Database::AddUser(const std::string& username, const std::string& password)
 const std::vector<User>& Database::GetAllUsers() const
 {
     return *users;
+}
+
+bool Database::CompareStrings(const std::string& s1, const std::string& s2) const
+{
+    if (s1.length() != s2.length())
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < s1.length(); i++)
+    {
+        if (s1.at(i) != s2.at(i))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 const User* Database::FindUser(const std::string& username) const
