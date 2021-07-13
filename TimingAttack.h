@@ -18,7 +18,7 @@ private:
 	long long LengthTrial(const std::string& username, const int length) const;
 	const std::string GenerateRandomString(const int length) const;
 	const std::string CrackPassword(const std::string& username, const int length) const;
-	long long PasswordTrial(const User* user, const std::string& guess) const;
+	long long PasswordTrial(const std::string& username, const std::string& guess) const;
 	void PrintStartMessage() const;
 	void PrintSucessMessage() const;
 };

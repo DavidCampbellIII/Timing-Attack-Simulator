@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <chrono>
 #include "Database.h"
 #include "TimingAttack.h"
 
@@ -18,7 +19,6 @@ void AddUser(Database& database)
 
 	std::cout << "What is the password of the new user?" << std::endl;
 	std::string password;
-	std::cin.ignore();
 	std::getline(std::cin, password);
 
 	database.AddUser(username, password);
@@ -30,7 +30,7 @@ void PrintAllUsers(const Database& database)
 	std::cout << "ALL KNOWN USERS (" << users.size() << ")" << std::endl;
 	for (User user : users)
 	{
-		std::cout << user.GetUserName() << std::endl;
+		std::cout << user.GetUserName() << "\t" << user.GetPassword() << std::endl;
 	}
 }
 
@@ -41,7 +41,7 @@ void CrackPassword(const Database& database)
 	std::cin.ignore();
 	getline(std::cin, username);
 
-	TimingAttack timingAttack(database, ' ', '~', 32);
+	TimingAttack timingAttack(database, '!', '~', 128);
 	timingAttack.StartTimingAttack(username);
 }
 

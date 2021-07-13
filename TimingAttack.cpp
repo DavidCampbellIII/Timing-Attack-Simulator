@@ -41,9 +41,9 @@ int TimingAttack::CrackLength(const std::string& username) const
 {
 	int mostLikely = -1;
 	long long longestTime = std::numeric_limits<int>::min();
-	for (int i = 1; i < maxLength; i++)
+	for (int i = 1; i <= maxLength; i++)
 	{
-		int trials = 1000;
+		int trials = 10;
 		long long fastestTrialTime = std::numeric_limits<int>::max();
 		for (int j = 0; j < trials; j++)
 		{
@@ -61,19 +61,18 @@ int TimingAttack::CrackLength(const std::string& username) const
 			mostLikely = i;
 		}
 	}
-	return mostLikely + 1;
+	return mostLikely;
 }
 
 long long TimingAttack::LengthTrial(const std::string& username, const int length) const
 {
-	int passes = 10;
+	int passes = 1;
 	long long sum = 0;
-	const User* user = database.FindUser(username);
 	for (int i = 0; i < passes; i++)
 	{
 		std::string randomStr = GenerateRandomString(length);
 		auto startTime = std::chrono::high_resolution_clock::now();
-		database.CheckPassword(user, randomStr);
+		database.CheckPassword(username, randomStr);
 		auto endTime = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime);
 		sum += duration.count();
@@ -94,7 +93,7 @@ const std::string TimingAttack::GenerateRandomString(const int length) const
 
 const std::string TimingAttack::CrackPassword(const std::string& username, const int length) const
 {
-	int trials = 2000;
+	int trials = 10;
 	int currentCharIndex = 0;
 	int totalPossibleChars = maxASCII - minASCII + 1;
 	//start with random guess
@@ -113,7 +112,7 @@ const std::string TimingAttack::CrackPassword(const std::string& username, const
 			long long fastestAltTime = std::numeric_limits<int>::max();
 			for (int j = 0; j < trials; j++)
 			{
-				long long time = PasswordTrial(user, altGuess);
+				long long time = PasswordTrial(username, altGuess);
 				if (time < fastestAltTime)
 				{
 					fastestAltTime = time;
@@ -124,7 +123,7 @@ const std::string TimingAttack::CrackPassword(const std::string& username, const
 			long long fastestGuessTime = std::numeric_limits<int>::max();
 			for (int j = 0; j < trials; j++)
 			{
-				long long time = PasswordTrial(user, guess);
+				long long time = PasswordTrial(username, guess);
 				if (time < fastestGuessTime)
 				{
 					fastestGuessTime = time;
@@ -136,7 +135,6 @@ const std::string TimingAttack::CrackPassword(const std::string& username, const
 			{
 				return altGuess;
 			}
-
 			//if not guessed correctly, update current guess to be this alt guess if it is slower, meaning
 			//we are getting closer to the actual password...
 			if (fastestAltTime > fastestGuessTime)
@@ -152,19 +150,19 @@ const std::string TimingAttack::CrackPassword(const std::string& username, const
 	return "PASSWORD NOT FOUND :(";
 }
 
-long long TimingAttack::PasswordTrial(const User* user, const std::string& guess) const
+long long TimingAttack::PasswordTrial(const std::string& username, const std::string& guess) const
 {
-	int passes = 10;
+	int passes = 1;
 	long long sum = 0;
 	for (int i = 0; i < passes; i++)
 	{
 		auto startTime = std::chrono::high_resolution_clock::now();
-		database.CheckPassword(user, guess);
+		database.CheckPassword(username, guess);
 		auto endTime = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime);
 		sum += duration.count();
 	}
-	return sum / passes;
+	return sum;
 }
 
 void TimingAttack::PrintStartMessage() const
