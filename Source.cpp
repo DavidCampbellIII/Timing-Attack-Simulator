@@ -10,17 +10,54 @@ enum class ProgramState
 	VALID_MENU_CHOICE, INVALID_MENU_CHOICE, QUIT_PROGRAM
 };
 
-void AddUser(Database& database)
+const std::string GetUsername(Database& database)
 {
 	std::cout << "What is the username of the new user?" << std::endl;
+
 	std::string username;
 	std::cin.ignore();
 	std::getline(std::cin, username);
 
+	while (database.HasUser(username))
+	{
+		std::cout << "Username '" << username << "' is already taken!  Please pick a different username: " << std::endl;
+		std::getline(std::cin, username);
+	}
+	return username;
+}
+
+char IsValidPassword(const std::string& password)
+{
+	for (int i = 0; i < password.length(); i++)
+	{
+		char currentChar = password.at(i);
+		if (currentChar < '!' || currentChar > '~')
+		{
+			return currentChar;
+		}
+	}
+	return 0;
+}
+
+const std::string GetPassword(Database& database)
+{
 	std::cout << "What is the password of the new user?" << std::endl;
+
 	std::string password;
 	std::getline(std::cin, password);
+	char illegalChar;
+	while ((illegalChar = IsValidPassword(password)) != 0)
+	{
+		std::cout << "Password contains illegal character '" << static_cast<char>(illegalChar) << "'.  Please choose a different password: " << std::endl;
+		std::getline(std::cin, password);
+	}
+	return password;
+}
 
+void AddUser(Database& database)
+{
+	const std::string username = GetUsername(database);
+	const std::string password = GetPassword(database);
 	database.AddUser(username, password);
 }
 
