@@ -8,8 +8,6 @@
 
 I built this as a fun little experiment in cracking passwords using nothing but the infamous timing attack.
 
----
-
 ## How Does It Work?
 
 Comparing strings takes time.  By measuring the amount of time it takes for the system to respond (measuring in nanoseconds!), we can determine if a guess is partially correct.  The longer it takes for the system to respond, the more letters that we have guessed correctly.
@@ -17,8 +15,6 @@ Comparing strings takes time.  By measuring the amount of time it takes for the 
 Do this a few thousand times, and we can crack nearly any password!
 
 Learn more [here](https://en.wikipedia.org/wiki/Timing_attack "Timing Attack Wikipedia")
-
----
 
 ## How To Run It
 
